@@ -1,0 +1,36 @@
+.home-container {
+    margin-top: 150px;
+}
+
+.pagination {
+    margin-bottom: 20px;
+}
+
+.pagination button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.pagination button:disabled {
+    background-color: lightgray;
+    cursor: not-allowed;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+}
+
+.products-container {
+    margin-bottom: 40px;
+}
+
+.product-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
