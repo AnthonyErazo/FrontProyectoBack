@@ -14,9 +14,10 @@ function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const responseToken = await axios.get(`h${REACT_APP_BASE_URL}/extractToken`, {
+        const responseToken = await axios.get(`${REACT_APP_BASE_URL}/extractToken`, {
           withCredentials: true
         });
+        console.log(responseToken)
         setUserData(responseToken.data);
         if (responseToken.data.role !== "admin") {
           const response = await axios.get(`${REACT_APP_BASE_URL}/api/users/${responseToken.data.id}`, {
@@ -45,7 +46,7 @@ function Dashboard() {
     setLoading(true);
     const fetchUserInactive = async () => {
       try {
-        const response = await axios.delete(`http://localhost:8080/api/users/`, {
+        const response = await axios.delete(`${REACT_APP_BASE_URL}/api/users/`, {
           withCredentials: true
         });
         setLoading(false);
@@ -63,7 +64,7 @@ function Dashboard() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await axios.post('http://localhost:8080/api/upload', formData, {
+      const response = await axios.post(`${REACT_APP_BASE_URL}/api/upload`, formData, {
         withCredentials: true
       });
       console.log(response.data);
@@ -88,17 +89,17 @@ function Dashboard() {
         <p>Email: {userData.email}</p>
         <p>Role: {userData.role}</p>
       </div>
-      {userData.role === 'admin' &&
+      {userData.role != 'user' &&
         <div>
           <button>
-            <Link to={``}>Agregar o quitar productos</Link>
+            <Link to={`/dashboard/sellproduct`}>Agregar o quitar productos</Link>
           </button>
-          <button>
+          {userData.role=='admin'&&<><button>
             <Link to={``}>Solicitudes a premium</Link>
           </button>
           <button onClick={eliminatedInactive}>
             Eliminar usuarios inactivos
-          </button>
+          </button></>}
         </div>
       }
       {userData.role === 'user' && (

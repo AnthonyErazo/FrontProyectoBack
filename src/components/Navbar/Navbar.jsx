@@ -19,7 +19,6 @@ function Navbar() {
         const response=await axios.get(`${REACT_APP_BASE_URL}/extractToken`, {
           withCredentials: true
         });
-        console.log(response)
         setUserData(response?.data)
         setUserAuth(true)
       } catch (error) {
@@ -50,7 +49,6 @@ function Navbar() {
         const response = await axios.get(`${REACT_APP_BASE_URL}/api/sessions/logout`, {
           withCredentials: true
         });
-        console.log(response)
         setLoading(false);
         setUserAuth(false)
       } catch (error) {
@@ -122,9 +120,9 @@ function Navbar() {
             </div>
           )}
         </div>
-        <Link className='cart' to={`/cart/${userData?.cart}`}>
+        {userData?.role!='admin'&&<Link className='cart' to={`/cart/${userData?.cart}`}>
           <i className='ri-shopping-cart-2-fill' ></i>
-        </Link>
+        </Link>}
       </div>
     </header >
   )

@@ -12,6 +12,7 @@ import ItemProduct from './pages/home/ItemProduct'
 import SearchPage from './pages/home/SearchPage'
 import Dashboard from './pages/dashboard/Dashboard'
 import ResetPassword from './pages/auth/ResetPassword'
+import SellProducts from './pages/dashboard/SellProducts'
 
 function App() {
 
@@ -43,6 +44,10 @@ function App() {
         {
           path: "dashboard",
           Component: Dashboard
+        },
+        {
+          path: "dashboard/sellproduct",
+          Component: SellProducts
         }
       ]
     },
