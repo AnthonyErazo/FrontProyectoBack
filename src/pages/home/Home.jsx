@@ -18,7 +18,9 @@ function Home() {
     setLoading(true)
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${REACT_APP_BASE_URL}/api/products?&query={"status":"true"}`);
+        const response = await axios.get(`${REACT_APP_BASE_URL}/api/products?&query={"status":"true"}`, {
+          withCredentials: true
+      });
         setData(response.data);
         setCurrentPage(response.data.page);
         setTotalPages(response.data.totalPages);
@@ -38,7 +40,9 @@ function Home() {
     setLoading(true)
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${REACT_APP_BASE_URL}/api/products?limit=10&page=${currentPage}&query={"status":"true"}`);
+        const response = await axios.get(`${REACT_APP_BASE_URL}/api/products?limit=10&page=${currentPage}&query={"status":"true"}`, {
+          withCredentials: true
+      });
         setData(response.data);
         setCurrentPage(response.data.page);
         setTotalPages(response.data.totalPages);
