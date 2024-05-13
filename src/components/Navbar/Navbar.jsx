@@ -44,7 +44,6 @@ function Navbar() {
     const fetchProducts = async () => {
       try {
         setShowAccount(false)
-        setCartUser(null)
         setUserData(null)
         const response = await axios.get(`${REACT_APP_BASE_URL}/api/sessions/logout`, {
           withCredentials: true
