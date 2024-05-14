@@ -11,30 +11,31 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [cartProducts, setCartProducts] = useState([]);
   const [priceTotal, setPriceTotal] = useState(0);
+
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get(`${REACT_APP_BASE_URL}/api/carts/${cid}`, {
+        withCredentials: true
+      });
+      setCartProducts(response.data.data.products);
+      let total = 0;
+      response.data.data.products.forEach(cart => {
+        total += (cart.product.price * cart.quantity);
+      });
+      setPriceTotal(total);
+    } catch (error) {
+      console.error(error.response.data.message)
+      navigate('/auth/login')
+    }
+  };
   
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const response = await axios.get(`${REACT_APP_BASE_URL}/api/carts/${cid}`, {
-          withCredentials: true
-        });
-        setCartProducts(response.data.data.products);
-        let total = 0;
-        response.data.data.products.forEach(cart => {
-          total += (cart.product.price * cart.quantity);
-        });
-        setPriceTotal(total);
-        setLoading(false);
-      } catch (error) {
-        console.error(error.response.data.message)
-        navigate('/auth/login')
-      }
-    };
     fetchCart();
+    setLoading(false);
   }, []);
 
   const buyProducts=()=>{
-    const fetchCart = async () => {
+    const fetchBuyProducts = async () => {
       try {
         const response = await axios.post(`${REACT_APP_BASE_URL}/api/carts/${cid}/purchase`, {
           withCredentials: true
@@ -43,32 +44,35 @@ function Cart() {
         console.error(error.response.data.message)
       }
     };
-    fetchCart();
+    fetchBuyProducts();
   }
   const eliminatedProductCart=(pid)=>{
-    console.log(pid)
-    const fetchCart = async () => {
+    setLoading(true)
+    const fetchEliminatedProductCart = async () => {
       try {
-        const response = await axios.delete(`${REACT_APP_BASE_URL}/api/carts/${cid}/products/${pid}`, {
+        await axios.delete(`${REACT_APP_BASE_URL}/api/carts/${cid}/products/${pid}`, {
           withCredentials: true
         });
+        await fetchCart();
       } catch (error) {
         console.error(error.response.data.message)
       }
     };
-    fetchCart();
+    fetchEliminatedProductCart();
+    setLoading(false)
   }
   const eliminatedAllProductCart=()=>{
-    const fetchCart = async () => {
+    const fetchEliminatedAllProductCart = async () => {
       try {
-        const response = await axios.delete(`${REACT_APP_BASE_URL}/api/carts/${cid}`, {
+        await axios.delete(`${REACT_APP_BASE_URL}/api/carts/${cid}`, {
           withCredentials: true
         });
+        await fetchCart();
       } catch (error) {
         console.error(error.response.data.message)
       }
     };
-    fetchCart();
+    fetchEliminatedAllProductCart();
   }
 
   if (loading) return <Loading />;

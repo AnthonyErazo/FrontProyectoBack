@@ -23,7 +23,9 @@ function ItemProduct() {
         setError(null)
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${REACT_APP_BASE_URL}/api/products/${pid}`);
+                const response = await axios.get(`${REACT_APP_BASE_URL}/api/products/${pid}`,{
+                    withCredentials: true 
+                });
                 setProduct(response.data.payload);
                 setLoading(false);
             } catch (error) {
@@ -49,13 +51,16 @@ function ItemProduct() {
     };
     const AddToCart = async () => {
         try {
+            setLoading(true)
             const responseUser = await axios.get(`${REACT_APP_BASE_URL}/extractToken`, {
                 withCredentials: true
             });
-            await axios.post(`${REACT_APP_BASE_URL}/api/carts/${responseUser.data.cart}/product/${pid}`, {
+            await axios.post(`${REACT_APP_BASE_URL}/api/carts/${responseUser.data.cart}/product/${pid}`, {},{
                 withCredentials: true
             });
+            setLoading(false)
         } catch (error) {
+            console.log(error)
             if(error.response.statusText=="Forbidden"){
                 console.log('no tiene acceso')
             }else if(error.response.statusText=="Unauthorized"){
