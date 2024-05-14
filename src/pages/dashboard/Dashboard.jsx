@@ -9,6 +9,7 @@ import { REACT_APP_BASE_URL } from "../../utils/config";
 function Dashboard() {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [files, setFiles] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +18,6 @@ function Dashboard() {
         const responseToken = await axios.get(`${REACT_APP_BASE_URL}/extractToken`, {
           withCredentials: true
         });
-        console.log(responseToken)
         setUserData(responseToken.data);
         if (responseToken.data.role !== "admin") {
           const response = await axios.get(`${REACT_APP_BASE_URL}/api/users/${responseToken.data.id}`, {
@@ -57,21 +57,35 @@ function Dashboard() {
     fetchUserInactive();
   };
   const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
+    const selectedFiles = Array.from(event.target.files);
+    setFiles([...files, ...selectedFiles]);
   };
+  const removeFile = (indexToRemove) => {
+    setFiles(files.filter((file, index) => index !== indexToRemove));
+  };
+
+
 
   const handleFileUpload = async () => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      const response = await axios.post(`${REACT_APP_BASE_URL}/api/upload`, formData, {
-        withCredentials: true
+      files.forEach(file => {
+        formData.append('file', file);
       });
+      const response = await axios.post(`${REACT_APP_BASE_URL}/api/users/${userData._id}/documents?type=documents`, formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
       console.log(response.data);
+      setFiles([]);
     } catch (error) {
       console.error(error);
     }
   };
+
 
   if (loading) return <Loading />;
 
@@ -94,20 +108,33 @@ function Dashboard() {
           <button>
             <Link to={`/dashboard/sellproduct`}>Agregar o quitar productos</Link>
           </button>
-          {userData.role=='admin'&&<><button>
-            <Link to={``}>Solicitudes a premium</Link>
+          {userData.role == 'admin' && <><button>
+            <Link to={`/dashboard/userspremium`}>Solicitudes a premium</Link>
           </button>
-          <button onClick={eliminatedInactive}>
-            Eliminar usuarios inactivos
-          </button></>}
+            <button onClick={eliminatedInactive}>
+              Eliminar usuarios inactivos
+            </button></>}
         </div>
       }
       {userData.role === 'user' && (
         <>
           <h1>Cambiar a usuario premium</h1>
-          <input type="file" onChange={handleFileChange} />
-          <button onClick={handleFileUpload}>Subir Archivo</button>
+          <input type="file" name='file' onChange={handleFileChange} multiple/>
+          <button onClick={handleFileUpload} disabled={files.length == 0 ? true : false}>Subir Archivo</button>
           <p>Nota: debe subir su dni y documento firmado</p>
+          {files.length > 0 && (
+            <div>
+              <h2>Documentos a subir:</h2>
+              <ul>
+                {files.map((file, index) => (
+                  <li key={index}>
+                    {file.name} <button onClick={() => removeFile(index)}>Quitar</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
         </>
       )}
       {userData.role === 'admin' && <UsersList />}

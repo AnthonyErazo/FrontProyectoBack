@@ -35,9 +35,10 @@ function Cart() {
   }, []);
 
   const buyProducts=()=>{
+    setLoading(true)
     const fetchBuyProducts = async () => {
       try {
-        const response = await axios.post(`${REACT_APP_BASE_URL}/api/carts/${cid}/purchase`, {
+        const response = await axios.post(`${REACT_APP_BASE_URL}/api/carts/${cid}/purchase`, {},{
           withCredentials: true
         });
       } catch (error) {
@@ -45,6 +46,8 @@ function Cart() {
       }
     };
     fetchBuyProducts();
+    fetchCart();
+    setLoading(false)
   }
   const eliminatedProductCart=(pid)=>{
     setLoading(true)
@@ -62,6 +65,7 @@ function Cart() {
     setLoading(false)
   }
   const eliminatedAllProductCart=()=>{
+    setLoading(true)
     const fetchEliminatedAllProductCart = async () => {
       try {
         await axios.delete(`${REACT_APP_BASE_URL}/api/carts/${cid}`, {
@@ -73,6 +77,7 @@ function Cart() {
       }
     };
     fetchEliminatedAllProductCart();
+    setLoading(false)
   }
 
   if (loading) return <Loading />;
@@ -95,7 +100,12 @@ function Cart() {
             <div className="cart-item-image">
               <img src={cart.product.thumbnail[0]} alt={cart.product.title} />
             </div>
-            <div className="cart-item-quantity">{cart.quantity}</div>
+            <div>
+              {/* <button>-</button> */}
+              <div className="cart-item-quantity">{cart.quantity}</div>
+              {/* <button>+</button>
+              <button>Confirmar</button> */}
+            </div>
             <div className="cart-item-price">${cart.product.price}</div>
             <div className="cart-item-subtotal">${cart.product.price * cart.quantity}</div>
             <div className="cart-item-actions">
@@ -107,7 +117,6 @@ function Cart() {
       </div>
       <button className="buy-button" onClick={buyProducts}>Comprar</button>
       <button className="buy-button" onClick={eliminatedAllProductCart}>eliminar todo</button>
-      <button className="buy-button">Mis tickets</button>
     </>
   );
 }

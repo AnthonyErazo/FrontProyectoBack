@@ -50,15 +50,16 @@ function ItemProduct() {
         }
     };
     const AddToCart = async () => {
+        setLoading(true)
         try {
-            setLoading(true)
             const responseUser = await axios.get(`${REACT_APP_BASE_URL}/extractToken`, {
                 withCredentials: true
             });
-            await axios.post(`${REACT_APP_BASE_URL}/api/carts/${responseUser.data.cart}/product/${pid}`, {},{
+            await axios.post(`${REACT_APP_BASE_URL}/api/carts/${responseUser.data.cart}/product/${pid}`, {
+                quantityProduct: quantity
+            },{
                 withCredentials: true
             });
-            setLoading(false)
         } catch (error) {
             console.log(error)
             if(error.response.statusText=="Forbidden"){
@@ -70,6 +71,7 @@ function ItemProduct() {
                 setError(error.response.data);
             }
         }
+        setLoading(false)
     };
 
     if (loading) return <Loading />

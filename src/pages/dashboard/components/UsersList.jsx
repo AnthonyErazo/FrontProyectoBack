@@ -10,7 +10,7 @@ function UsersList() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get(`${REACT_APP_BASE_URL}/api/users/`, {
+                const response = await axios.get(`${REACT_APP_BASE_URL}/api/users?query={}`, {
                     withCredentials: true
                 });
                 setUsersData(response.data.payload);

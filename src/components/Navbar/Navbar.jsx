@@ -41,11 +41,11 @@ function Navbar() {
   }
   const logoutSession = () => {
     setLoading(true)
-    const fetchProducts = async () => {
+    const fetchLogoutSession = async () => {
       try {
         setShowAccount(false)
         setUserData(null)
-        const response = await axios.get(`${REACT_APP_BASE_URL}/api/sessions/logout`, {
+        await axios.get(`${REACT_APP_BASE_URL}/api/sessions/logout`, {
           withCredentials: true
         });
         setLoading(false);
@@ -64,7 +64,7 @@ function Navbar() {
       }
     };
 
-    fetchProducts();
+    fetchLogoutSession();
   }
   const accountLinks = useMemo(() => {
     if (userAuth) {
