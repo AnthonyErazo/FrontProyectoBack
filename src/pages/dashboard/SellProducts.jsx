@@ -1,58 +1,77 @@
 import React, { useState } from 'react';
 import './styles/SellProducts.css';
+import axios from 'axios';
 import MySellProducts from './components/MySellProducts';
+import { REACT_APP_BASE_URL } from '../../utils/config';
 
 function SellProducts() {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         price: '',
-        thumbnails: [],
         code: '',
         stock: '',
         status: true,
         category: ''
     });
+    const [thumbnails, setThumbnails] = useState([]);
 
     const handleChange = (e) => {
-        const { name, value, type } = e.target;
-        if (type === 'file') {
-            const filesArray = Array.from(e.target.files);
-            setFormData({
-                ...formData,
-                thumbnails: [...formData.thumbnails, ...filesArray]
-            });
-        } else {
-            setFormData({
-                ...formData,
-                [name]: value
-            });
-        }
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (formData.thumbnails.length === 0) {
-            alert('Debe subir al menos una imagen.');
-            return;
-        }
-        console.log(formData);
+        const { name, value } = e.target;
         setFormData({
-            title: '',
-            description: '',
-            price: '',
-            thumbnails: [],
-            code: '',
-            stock: '',
-            status: true,
-            category: ''
+            ...formData,
+            [name]: value
         });
     };
 
+    const handleThumbnailChange = (e) => {
+        const filesArray = Array.from(e.target.files);
+        setThumbnails([...thumbnails, ...filesArray]);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const productResponse = await axios.post(`${REACT_APP_BASE_URL}/api/products/`, formData, {
+                withCredentials: true
+            });
+
+            const images = new FormData();
+            thumbnails.forEach((image) => {
+                images.append('file', image);
+            });
+
+            const reponseImage=await axios.post(`${REACT_APP_BASE_URL}/uploader?type=products`, images, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            const imagePaths = reponseImage.data.payload.map(file => file.filePath);
+            await axios.put(`${REACT_APP_BASE_URL}/api/products/${productResponse.data.payload._id}`, {thumbnail:imagePaths}, {
+                withCredentials: true
+            });
+
+            setFormData({
+                title: '',
+                description: '',
+                price: '',
+                code: '',
+                stock: '',
+                status: true,
+                category: ''
+            });
+            setThumbnails([]);
+        } catch (error) {
+            console.error('Error al enviar el formulario:', error); 
+        }
+    };
+
     const handleRemoveThumbnail = (index) => {
-        const thumbnails = [...formData.thumbnails];
-        thumbnails.splice(index, 1);
-        setFormData({ ...formData, thumbnails });
+        const newThumbnails = [...thumbnails];
+        newThumbnails.splice(index, 1);
+        setThumbnails(newThumbnails);
     };
 
     return (
@@ -97,14 +116,14 @@ function SellProducts() {
                         <input
                             type="file"
                             id="thumbnail"
-                            name="thumbnail"
-                            onChange={handleChange}
+                            name="file"
+                            onChange={handleThumbnailChange}
                             accept="image/*"
                             multiple
                             required
                         />
                         <div className="thumbnails-preview">
-                            {formData.thumbnails.map((thumbnail, index) => (
+                            {thumbnails.map((thumbnail, index) => (
                                 <div key={index} className="thumbnail-item">
                                     <img src={URL.createObjectURL(thumbnail)} alt={`Thumbnail ${index + 1}`} className="thumbnail-image" />
                                     <button type="button" onClick={() => handleRemoveThumbnail(index)} className="remove-thumbnail-button">Eliminar</button>
