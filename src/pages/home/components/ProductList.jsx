@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom"
 import '../styles/ProductList.css'
-import { REACT_APP_BASE_URL } from "../../../utils/config";
 
 function ProductList({ product }) {
     return (

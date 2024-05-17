@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './styles/SellProducts.css';
 import axios from 'axios';
 import MySellProducts from './components/MySellProducts';
+import Loading from '../../components/Loading';
 import { REACT_APP_BASE_URL } from '../../utils/config';
 
 function SellProducts() {
@@ -15,6 +16,7 @@ function SellProducts() {
         category: ''
     });
     const [thumbnails, setThumbnails] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,26 +32,29 @@ function SellProducts() {
     };
 
     const handleSubmit = async (e) => {
+        setLoading(true)
         e.preventDefault();
 
         try {
-            const productResponse = await axios.post(`${REACT_APP_BASE_URL}/api/products/`, formData, {
-                withCredentials: true
-            });
 
             const images = new FormData();
             thumbnails.forEach((image) => {
                 images.append('file', image);
             });
 
-            const reponseImage=await axios.post(`${REACT_APP_BASE_URL}/uploader?type=products`, images, {
+            const reponseImage=await axios.post(`${REACT_APP_BASE_URL}/upload-to-firebase`, images, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            const imagePaths = reponseImage.data.payload.map(file => file.filePath);
-            await axios.put(`${REACT_APP_BASE_URL}/api/products/${productResponse.data.payload._id}`, {thumbnail:imagePaths}, {
+            console.log(reponseImage.data.urls)
+            const productData = {
+                ...formData,
+                thumbnail: [...reponseImage.data.urls]
+            };
+            console.log(productData)
+            const productResponse = await axios.post(`${REACT_APP_BASE_URL}/api/products/`, productData, {
                 withCredentials: true
             });
 
@@ -63,6 +68,7 @@ function SellProducts() {
                 category: ''
             });
             setThumbnails([]);
+            setLoading(false)
         } catch (error) {
             console.error('Error al enviar el formulario:', error); 
         }
@@ -74,6 +80,7 @@ function SellProducts() {
         setThumbnails(newThumbnails);
     };
 
+    if(loading) return <Loading />
     return (
         <>
             <div className="sell-products-container">

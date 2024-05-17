@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { REACT_APP_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
+import Loading from '../../../components/Loading';
 
 function MySellProducts() {
     const [data, setData] = useState([]);
@@ -34,7 +35,13 @@ function MySellProducts() {
         fetchProducts();
         setLoading(false);
     }, []);
-    if(loading) return <>hola</>
+    const handleEditProduct=(pid)=>{
+        
+    }
+    const handleEliminatedProduct=(pid)=>{
+
+    }
+    if(loading) return <Loading />
     return (
         <div>
             <table className="users-table">
@@ -46,6 +53,7 @@ function MySellProducts() {
                         <th>Estado</th>
                         <th>Categoria</th>
                         <th>Descripcion</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,6 +65,10 @@ function MySellProducts() {
                             <td>{data.status==true?'Disponible':'No disponible'}</td>
                             <td>{data.category}</td>
                             <td>{data.description}</td>
+                            <td>
+                                <button onClick={()=>handleEditProduct(data._id)}>Editar</button>
+                                <button onClick={()=>handleEliminatedProduct(data._id)}>Eliminar</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
